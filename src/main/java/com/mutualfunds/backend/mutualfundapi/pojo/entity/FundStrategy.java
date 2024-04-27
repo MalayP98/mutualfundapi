@@ -10,11 +10,7 @@ import java.util.List;
 @Table(name = "fund_strategy")
 @Getter
 @Setter
-public class FundStrategy {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
-    private Long id;
+public class FundStrategy extends AuditingEntity{
 
     @Column(name = "name")
     private String name;
@@ -22,6 +18,6 @@ public class FundStrategy {
     @Column(name = "description", length = 500)
     private String description;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "strategy", cascade = CascadeType.ALL)
+    @OneToMany(cascade = CascadeType.ALL)
     private List<Fund> funds;
 }

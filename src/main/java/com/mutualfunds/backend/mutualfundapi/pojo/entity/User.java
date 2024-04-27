@@ -1,5 +1,6 @@
 package com.mutualfunds.backend.mutualfundapi.pojo.entity;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -9,11 +10,12 @@ import javax.persistence.*;
 @Getter
 @Setter
 @Table(name = "users")
-public class User {
+public class User extends AuditingEntity{
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
-    private Long id;
+    public User(String username, Long phoneNumber) {
+        this.username = username;
+        this.phoneNumber = phoneNumber;
+    }
 
     @Column(name = "username")
     private String username;

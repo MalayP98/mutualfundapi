@@ -1,5 +1,6 @@
 package com.mutualfunds.backend.mutualfundapi.pojo.entity;
 
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -9,16 +10,19 @@ import javax.persistence.*;
 @Table(name = "payment")
 @Getter
 @Setter
-public class Payment {
+@Builder
+public class Payment extends AuditingEntity {
 
     public enum TransactionType{
         CREDIT,
         DEBIT;
     }
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
-    private Long id;
+    public enum TransactionStatus{
+        PENDING,
+        COMPLETE,
+        FAILED;
+    }
 
     @Column(name = "product_id")
     private Long productId;
@@ -29,4 +33,11 @@ public class Payment {
     @Column(name = "transaction_type")
     @Enumerated(EnumType.STRING)
     private TransactionType transactionType;
+
+    @Column(name = "status")
+    @Enumerated(EnumType.STRING)
+    private TransactionStatus status;
+
+    @Column(name = "txnId")
+    private String transactionId;
 }
