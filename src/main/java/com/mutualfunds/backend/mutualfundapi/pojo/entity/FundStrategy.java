@@ -22,6 +22,6 @@ public class FundStrategy {
     @Column(name = "description", length = 500)
     private String description;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "strategy", cascade = CascadeType.ALL)
+    @OneToMany(cascade = CascadeType.ALL)
     private List<Fund> funds;
 }
