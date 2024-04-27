@@ -9,16 +9,12 @@ import javax.persistence.*;
 @Table(name = "payment")
 @Getter
 @Setter
-public class Payment {
+public class Payment extends AuditingEntity {
 
     public enum TransactionType{
         CREDIT,
         DEBIT;
     }
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
-    private Long id;
 
     @Column(name = "product_id")
     private Long productId;

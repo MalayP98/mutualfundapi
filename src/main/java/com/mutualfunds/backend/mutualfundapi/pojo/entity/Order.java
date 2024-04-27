@@ -4,11 +4,7 @@ import javax.persistence.*;
 
 @Entity
 @Table(name = "orders")
-public class Order {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
-    private Long id;
+public class Order extends AuditingEntity{
 
     @Column(name = "amount")
     private Integer amount;

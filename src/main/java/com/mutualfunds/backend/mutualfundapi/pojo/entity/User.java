@@ -10,16 +10,12 @@ import javax.persistence.*;
 @Getter
 @Setter
 @Table(name = "users")
-public class User {
+public class User extends AuditingEntity{
 
     public User(String username, Long phoneNumber) {
         this.username = username;
         this.phoneNumber = phoneNumber;
     }
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
-    private Long id;
 
     @Column(name = "username")
     private String username;

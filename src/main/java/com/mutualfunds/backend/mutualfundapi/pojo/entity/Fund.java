@@ -15,11 +15,7 @@ import javax.persistence.GenerationType;
 @Table(name = "fund")
 @Getter
 @Setter
-public class Fund {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
-    private Long id;
+public class Fund extends AuditingEntity{
 
     @Column(name = "name")
     private String name;

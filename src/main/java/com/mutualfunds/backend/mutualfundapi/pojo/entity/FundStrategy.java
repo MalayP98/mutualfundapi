@@ -10,11 +10,7 @@ import java.util.List;
 @Table(name = "fund_strategy")
 @Getter
 @Setter
-public class FundStrategy {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
-    private Long id;
+public class FundStrategy extends AuditingEntity{
 
     @Column(name = "name")
     private String name;
