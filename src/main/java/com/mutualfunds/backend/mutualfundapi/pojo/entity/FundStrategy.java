@@ -19,9 +19,9 @@ public class FundStrategy {
     @Column(name = "name")
     private String name;
 
-    @Column(name = "description")
+    @Column(name = "description", length = 500)
     private String description;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "fund_strategy", cascade = CascadeType.ALL)
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "strategy", cascade = CascadeType.ALL)
     private List<Fund> funds;
 }
