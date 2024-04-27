@@ -3,7 +3,7 @@ package com.mutualfunds.backend.mutualfundapi.pojo.entity;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "order")
+@Table(name = "orders")
 public class Order {
 
     @Id
