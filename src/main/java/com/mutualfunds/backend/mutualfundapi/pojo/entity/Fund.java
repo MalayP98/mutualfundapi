@@ -1,4 +1,4 @@
-package com.mutualfunds.backend.mutualfundapi.entity;
+package com.mutualfunds.backend.mutualfundapi.pojo.entity;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -6,17 +6,18 @@ import lombok.Setter;
 import javax.persistence.*;
 
 @Entity
+@Table(name = "fund")
 @Getter
 @Setter
-public class User {
+public class Fund {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long id;
 
-    @Column
+    @Column(name = "name")
     private String name;
 
-    @Column
-    private Long phoneNumber;
+    @Column(name = "percentage")
+    private Integer percentage;
 }
