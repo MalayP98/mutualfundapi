@@ -1,16 +1,16 @@
 package com.mutualfunds.backend.mutualfundapi.filter;
 
-import com.mutualfunds.backend.mutualfundapi.pojo.entity.User;
 import com.mutualfunds.backend.mutualfundapi.services.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.annotation.Order;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
 import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
-import java.util.Optional;
 
 @Component
 @Order(1)
@@ -31,9 +31,14 @@ public class AuthFilter implements Filter {
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
         HttpServletRequest httpServletRequest = (HttpServletRequest) servletRequest;
         String phoneNumber = httpServletRequest.getHeader(PHONE_NUMBER_HEADER);
-        userService
-                .getUserWithPhoneNumber(Long.valueOf(phoneNumber))
-                .orElse(userService.createRandomUserWithPhoneNumber(Long.valueOf(phoneNumber)));
+        SecurityContextHolder.getContext().setAuthentication(
+                new UsernamePasswordAuthenticationToken(
+                        userService
+                                .getUserWithPhoneNumber(Long.valueOf(phoneNumber))
+                                .orElse(userService.createRandomUserWithPhoneNumber(Long.valueOf(phoneNumber))),
+                        null
+                )
+        );
         filterChain.doFilter(servletRequest, servletResponse);
     }
 

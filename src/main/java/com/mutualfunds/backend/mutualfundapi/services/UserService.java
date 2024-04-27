@@ -3,6 +3,7 @@ package com.mutualfunds.backend.mutualfundapi.services;
 import com.mutualfunds.backend.mutualfundapi.pojo.entity.User;
 import com.mutualfunds.backend.mutualfundapi.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -23,5 +24,9 @@ public class UserService {
                 "User-"+ UUID.randomUUID().toString().substring(5),
                 phoneNumber)
         );
+    }
+
+    public User currentUser(){
+        return (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
     }
 }
