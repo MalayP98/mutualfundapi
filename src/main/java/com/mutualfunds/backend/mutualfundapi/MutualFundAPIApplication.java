@@ -4,10 +4,10 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class MutualfundapiApplication {
+public class MutualFundAPIApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(MutualfundapiApplication.class, args);
+		SpringApplication.run(MutualFundAPIApplication.class, args);
 		System.out.println("hello World");
 	}
 
