@@ -1,5 +1,6 @@
 package com.mutualfunds.backend.mutualfundapi.pojo.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -20,4 +21,8 @@ public class Fund {
 
     @Column(name = "percentage")
     private Integer percentage;
+
+    @ManyToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "strategy_id")
+    private FundStrategy strategy;
 }
