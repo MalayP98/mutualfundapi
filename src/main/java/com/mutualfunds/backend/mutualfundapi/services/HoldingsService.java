@@ -1,7 +1,6 @@
 package com.mutualfunds.backend.mutualfundapi.services;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -14,8 +13,6 @@ import com.mutualfunds.backend.mutualfundapi.dto.MarketValueDTO;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.mutualfunds.backend.mutualfundapi.constants.JsonConstants;
-import com.mutualfunds.backend.mutualfundapi.daos.CreateOrderDAO;
-import com.mutualfunds.backend.mutualfundapi.dto.CreateOrderDTO;
 import com.mutualfunds.backend.mutualfundapi.dto.FundDTO;
 import com.mutualfunds.backend.mutualfundapi.pojo.joins.OrderFundJoin;
 
@@ -28,8 +25,6 @@ import lombok.extern.slf4j.Slf4j;
 public class HoldingsService {
     
     private final UserService userService;
-
-    private final FundStrategyService fundStrategyService;
 
     private final OrderService orderService;
 
