@@ -1,4 +1,4 @@
-package com.mutualfunds.backend.mutualfundapi;
+package com.mutualfunds.backend.mutualfundapi.mapper;
 
 import com.mutualfunds.backend.mutualfundapi.pojo.entity.Fund;
 import com.mutualfunds.backend.mutualfundapi.pojo.entity.FundStrategy;
