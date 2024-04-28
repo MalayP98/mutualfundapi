@@ -1,6 +1,5 @@
 package com.mutualfunds.backend.mutualfundapi.services;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.mutualfunds.backend.mutualfundapi.constants.JsonConstants;
 import com.mutualfunds.backend.mutualfundapi.daos.PaymentDAO;
 import com.mutualfunds.backend.mutualfundapi.dto.PaymentResponseDTO;
@@ -8,12 +7,14 @@ import com.mutualfunds.backend.mutualfundapi.pojo.entity.Payment;
 import com.mutualfunds.backend.mutualfundapi.repositories.PaymentRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.concurrent.CompletableFuture;
 
 @Service
-@RequiredArgsConstructor
+@RequiredArgsConstructor(onConstructor_ = {@Autowired})
 @Slf4j
 public class PaymentService {
 
@@ -21,30 +22,36 @@ public class PaymentService {
 
     private final UserService userService;
 
-    public PaymentResponseDTO getPaymentLink(PaymentDAO paymentInfo){
+    private final PaymentManagerService paymentManagerService;
+
+    public PaymentResponseDTO getPaymentLink(PaymentDAO paymentInfo, Long strategyId) {
         try {
-            String payload = JsonConstants.OBJECT_MAPPER.writeValueAsString(paymentInfo);
-            // TODO : send this payload to '/payment' endpoint and store result in 'result'.
-            String result = "";
-            PaymentResponseDTO paymentResponse = JsonConstants
-                    .OBJECT_MAPPER
-                    .readValue(result, PaymentResponseDTO.class);
-            CompletableFuture.runAsync(() -> savePayment(paymentResponse, paymentInfo));
+            //Make payload json from DAO
+            String paymentDAOJson = JsonConstants.OBJECT_MAPPER.writeValueAsString(paymentInfo);
+            //Rest Api call;
+            String results = paymentManagerService.createPaymentCall(paymentDAOJson);
+            //get  the response DTO from the result string
+            PaymentResponseDTO paymentResponse = JsonConstants.OBJECT_MAPPER.readValue(results, PaymentResponseDTO.class);
+            CompletableFuture.runAsync(() -> savePayment(paymentResponse, paymentInfo, strategyId));
             return paymentResponse;
-        } catch (JsonProcessingException e) {
-            log.error("Unable to create payment link. Please try again");
+        } catch (Exception e) {
+            // TODO: handle exception
+            log.error("Error in getting payment link");
+            return PaymentResponseDTO.genericFailureResponse("ERROR: " + e.getMessage());
         }
-        return PaymentResponseDTO.genericFailureResponse();
     }
 
-    private Payment savePayment(PaymentResponseDTO paymentResponse, PaymentDAO paymentInfo){
+    
+
+    private Payment savePayment(PaymentResponseDTO paymentResponse, PaymentDAO paymentInfo, Long strategyId){
         String link = paymentResponse.getPaymentLink();
         String[] tokens = link.split("//");
         return paymentRepository.save(Payment
                 .builder()
                 .userId(userService.currentUser().getId())
                 .status(Payment.TransactionStatus.PENDING)
-                .productId(paymentInfo.getProductId())
+                .amount(paymentInfo.getAmount())
+                .productId(strategyId)
                 .transactionType(Payment.TransactionType.CREDIT)
                 .transactionId(tokens[tokens.length-1])
                 .build());
