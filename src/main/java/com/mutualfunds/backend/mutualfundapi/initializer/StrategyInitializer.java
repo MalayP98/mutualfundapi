@@ -1,6 +1,7 @@
 package com.mutualfunds.backend.mutualfundapi.initializer;
 
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.mutualfunds.backend.mutualfundapi.constants.AppProperties;
 import com.mutualfunds.backend.mutualfundapi.constants.JsonConstants;
 import com.mutualfunds.backend.mutualfundapi.pojo.entity.FundStrategy;
 import com.mutualfunds.backend.mutualfundapi.services.FundStrategyService;
@@ -20,6 +21,8 @@ import java.util.List;
 public class StrategyInitializer implements CommandLineRunner {
 
     private final FundStrategyService fundStrategyService;
+
+    private final AppProperties appProperties;
 
     private final static String STRATEGIES_PATH = "src/main/resources/jsons/";
 

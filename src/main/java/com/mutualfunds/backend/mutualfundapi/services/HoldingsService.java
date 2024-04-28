@@ -5,13 +5,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.mutualfunds.backend.mutualfundapi.dto.HoldingsDTO;
 import com.mutualfunds.backend.mutualfundapi.dto.MarketValueDTO;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonMappingException;
 import com.mutualfunds.backend.mutualfundapi.constants.JsonConstants;
 import com.mutualfunds.backend.mutualfundapi.dto.FundDTO;
 import com.mutualfunds.backend.mutualfundapi.pojo.joins.OrderFundJoin;
@@ -28,7 +25,7 @@ public class HoldingsService {
 
     private final OrderService orderService;
 
-    private final RTAManagerService rtaManagerService;
+    private final RTAService rtaManagerService;
 
     public HoldingsDTO calculateHoldingsDTO() throws Exception{
         //Get current user id
@@ -69,8 +66,10 @@ public class HoldingsService {
             totalMarketValue += tempFund.getMarketValue();
             fundMap.put(fundName, tempFund);
         }
-
-        HoldingsDTO result = HoldingsDTO.builder().strategyMap(strategyMap).totalInvestedAmount(totalInvestedValue).totalMarketValue(totalMarketValue).build();
-        return result;
+        return HoldingsDTO
+                .builder()
+                .strategyMap(strategyMap)
+                .totalInvestedAmount(totalInvestedValue)
+                .totalMarketValue(totalMarketValue).build();
     }
 }

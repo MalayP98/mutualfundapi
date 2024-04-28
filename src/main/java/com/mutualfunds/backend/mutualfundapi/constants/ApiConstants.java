@@ -1,14 +1,14 @@
 package com.mutualfunds.backend.mutualfundapi.constants;
 
-import java.util.Map;
-
+import lombok.extern.slf4j.Slf4j;
+import okhttp3.*;
 import org.springframework.http.HttpStatus;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.HttpServerErrorException;
 
-import okhttp3.MediaType;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.RequestBody;
+import java.io.IOException;
 
+@Slf4j
 public class ApiConstants {
 
     private ApiConstants(){
@@ -24,5 +24,19 @@ public class ApiConstants {
     public static RequestBody getRequestBody(String requestJson) {
         return RequestBody.create(requestJson, JSON_MEDIA);
     }
-    
+
+    public static String getResponseBody(Request request) throws IOException {
+        try(Response response = ApiConstants.API_CLIENT.newCall(request).execute()) {
+            if (response.code() != 200) {
+                if (response.code() == 400) {
+                    log.error("Bad Request Error");
+                    throw new HttpClientErrorException(HttpStatus.BAD_REQUEST);
+                } else {
+                    log.error("Failed to fetch from payment server");
+                    throw new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR);
+                }
+            }
+            return response.body().string();
+        }
+    }
 }

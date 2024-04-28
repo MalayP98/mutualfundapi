@@ -1,8 +1,6 @@
 package com.mutualfunds.backend.mutualfundapi.services;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonMappingException;
-import com.mutualfunds.backend.mutualfundapi.constants.ApiConstants;
+import com.mutualfunds.backend.mutualfundapi.constants.AppProperties;
 import com.mutualfunds.backend.mutualfundapi.constants.JsonConstants;
 import com.mutualfunds.backend.mutualfundapi.daos.PaymentDAO;
 import com.mutualfunds.backend.mutualfundapi.dto.CheckPaymentDTO;
@@ -33,25 +31,20 @@ public class PaymentService {
 
     private final UserService userService;
 
-    private final PaymentManagerService paymentManagerService;
+    private final PaymentManager paymentManager;
 
     private final FundStrategyRepository fundStrategyRepository;
 
     private final OrderService orderService;
 
+    private final AppProperties appProperties;
+
     public PaymentResponseDTO getPaymentLink(PaymentDAO paymentInfo) {
         try {
-            // Make payload json from DAO
-            String paymentDAOJson = JsonConstants.OBJECT_MAPPER.writeValueAsString(paymentInfo);
-            // Rest Api call;
-            String results = paymentManagerService.createPaymentCall(paymentDAOJson);
-            // get the response DTO from the result string
-            PaymentResponseDTO paymentResponse = JsonConstants.OBJECT_MAPPER.readValue(results,
-                    PaymentResponseDTO.class);
+            PaymentResponseDTO paymentResponse = paymentManager.createPaymentCall(paymentInfo);
             CompletableFuture.runAsync(() -> savePayment(paymentResponse, paymentInfo));
             return paymentResponse;
         } catch (Exception e) {
-            // TODO: handle exception
             log.error("Error in getting payment link");
             return PaymentResponseDTO.genericFailureResponse("ERROR: " + e.getMessage());
         }
@@ -80,59 +73,36 @@ public class PaymentService {
         // Check Payment status
         List<Payment> completedPayments = new ArrayList<>();
         for (Payment item : pendingPayments) {
-            int maxRetries = ApiConstants.MAX_RETRIES;
-            boolean success = checkPaymentStatus(item, maxRetries);
+            boolean success = checkPaymentStatus(item);
             if (success) {
                 completedPayments.add(item);
             }
             CompletableFuture.runAsync(() -> updateTransactionStatus(item, success));
-
         }
-
         if (completedPayments.size() == 0) {
             return false;
         }
 
-        // From list of successful Payment Entries place orders
-        for (Payment item : completedPayments) {
-            // Fetch funds associated with strategy
-            Long strategyId = item.getProductId();
-            List<Fund> fundList = fundStrategyRepository.findFundsByStrategyId(strategyId);
+        completedPayments.stream().parallel().forEach(item -> {
+            List<Fund> fundList = fundStrategyRepository.findFundsByStrategyId(item.getProductId());
             // For each fund place order
-            orderService.placeOrders(userId, item, fundList);
-
-        }
-
+            CompletableFuture.runAsync(() -> orderService.placeOrders(userId, item, fundList));
+        });
         return true;
-
     }
 
-    private boolean checkPaymentStatus(Payment item, int retries)
-            throws IOException, JsonProcessingException, JsonMappingException {
+    private boolean checkPaymentStatus(Payment item) throws IOException {
         boolean success = false;
+        int retries = appProperties.getGlobalRetryCount();
         while (retries > 0) {
             try {
-                String response = paymentManagerService.getPaymentCall(item.getTransactionId());
-                CheckPaymentDTO checkPayment = JsonConstants.OBJECT_MAPPER.readValue(response, CheckPaymentDTO.class);
-                if (checkPayment.getStatus() == "Success") {
+                CheckPaymentDTO checkPayment = paymentManager.getPaymentCall(item.getTransactionId());
+                if (checkPayment.getStatus().equals("Success")) {
                     success = true;
                     break;
                 }
             } catch (HttpClientErrorException e) {
-                // TODO Auto-generated catch block
-                log.error("Failed payment attempt" + e.getMessage());
-            } catch (HttpServerErrorException e) {
-                // TODO Auto-generated catch block
-                log.error("Failed payment attempt" + e.getMessage());
-            } catch (JsonMappingException e) {
-                // TODO Auto-generated catch block
-                log.error("Failed payment attempt" + e.getMessage());
-            } catch (JsonProcessingException e) {
-                // TODO Auto-generated catch block
-                log.error("Failed payment attempt" + e.getMessage());
-            } catch (IOException e) {
-                // TODO Auto-generated catch block
-                log.error("Failed payment attempt" + e.getMessage());
+                log.error("Failed payment attempt. Message {}", e.getMessage());
             } finally {
                 retries--;
             }
