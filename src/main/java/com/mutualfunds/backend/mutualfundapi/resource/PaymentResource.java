@@ -2,7 +2,6 @@ package com.mutualfunds.backend.mutualfundapi.resource;
 
 import com.mutualfunds.backend.mutualfundapi.daos.PaymentDAO;
 import com.mutualfunds.backend.mutualfundapi.dto.PaymentResponseDTO;
-import com.mutualfunds.backend.mutualfundapi.services.PaymentManagerService;
 import com.mutualfunds.backend.mutualfundapi.services.PaymentService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
