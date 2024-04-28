@@ -68,7 +68,7 @@ public class PaymentService {
         // Fetch user id
         Long userId = userService.currentUser().getId();
         // Get all pending payments from user
-        List<Payment> pendingPayments = paymentRepository.findPaymentByUserIdAndStatusAndTransactionType(userId,
+        List<Payment> pendingPayments = paymentRepository.findByUserIdAndStatusAndTransactionType(userId,
                 Payment.TransactionStatus.PENDING, Payment.TransactionType.CREDIT);
         // Check Payment status
         List<Payment> completedPayments = new ArrayList<>();
