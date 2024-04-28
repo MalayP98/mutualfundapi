@@ -6,11 +6,7 @@ import java.util.List;
 
 import com.mutualfunds.backend.mutualfundapi.mapper.OrderFundJoinMapper;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.HttpClientErrorException;
-import org.springframework.web.client.HttpServerErrorException;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonMappingException;
 import com.mutualfunds.backend.mutualfundapi.constants.JsonConstants;
 import com.mutualfunds.backend.mutualfundapi.daos.CreateOrderDAO;
 import com.mutualfunds.backend.mutualfundapi.dto.CreateOrderDTO;
@@ -30,7 +26,7 @@ public class OrderService {
 
     private final OrderRepository orderRepository;
 
-    private final RTAManagerService rtaManagerService;
+    private final RTAService rtaManagerService;
 
     public List<OrderFundJoin> getAllOrdersByUserId(Long userId) throws SQLException{
         try {
@@ -41,8 +37,7 @@ public class OrderService {
         }
     }
 
-    public void placeOrders(Long userId, Payment item, List<Fund> fundList)
-            throws JsonProcessingException, IOException, JsonMappingException {
+    public void placeOrders(Long userId, Payment item, List<Fund> fundList) {
         for(Fund fund: fundList) {
             try {
                 Integer percentage = fund.getPercentage();
@@ -52,35 +47,20 @@ public class OrderService {
                 String response = rtaManagerService.createOrder(jsonBody);
                 CreateOrderDTO createdOrder= JsonConstants.OBJECT_MAPPER.readValue(response, CreateOrderDTO.class);
                 saveOrder(userId, fund, createdOrder);
-            } catch (HttpClientErrorException e) {
-                // TODO Auto-generated catch block
-                log.error("Failed to place Order: " + e.getMessage());
-            } catch (HttpServerErrorException e) {
-                // TODO Auto-generated catch block
-                log.error("Failed to place Order: " + e.getMessage());
-            } catch (JsonMappingException e) {
-                // TODO Auto-generated catch block
-                log.error("Failed to place Order: " + e.getMessage());
-            } catch (JsonProcessingException e) {
-                // TODO Auto-generated catch block
-                log.error("Failed to place Order: " + e.getMessage());
             } catch (IOException e) {
-                // TODO Auto-generated catch block
-                log.error("Failed to place Order: " + e.getMessage());
+                log.error("Error while creating order. Message {}", e.getMessage());
             }
         }
     }
 
     private void saveOrder(Long userId, Fund fund, CreateOrderDTO createdOrder) {
-        Order order = Order.builder().amount(createdOrder.getData().getAmount())
-        .orderId(createdOrder.getData().getId())
-        .productId(fund.getId())
-        .units(createdOrder.getData().getUnits())
-        .userId(userId)
-        .status(Order.TransactionStatus.SUBMITTED)
-        .build();
-        
-        orderRepository.save(order);
+        orderRepository.save(Order.builder().amount(createdOrder.getData().getAmount())
+                .orderId(createdOrder.getData().getId())
+                .productId(fund.getId())
+                .units(createdOrder.getData().getUnits())
+                .userId(userId)
+                .status(Order.TransactionStatus.SUBMITTED)
+                .build());
     }
 
     public void updateOrderStatus(Order order, Order.TransactionStatus newStatus) {

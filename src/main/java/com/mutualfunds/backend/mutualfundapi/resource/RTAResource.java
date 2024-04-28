@@ -22,7 +22,7 @@ public class RTAResource {
     private final HoldingsService holdingsService;
 
     @GetMapping("/getPortfolio")
-    public ResponseEntity<HoldingsDTO>  getFundHoldings() {
+    public ResponseEntity<HoldingsDTO> getFundHoldings() {
         try {
             HoldingsDTO response = holdingsService.calculateHoldingsDTO();
             return ResponseEntity.ok(response);
