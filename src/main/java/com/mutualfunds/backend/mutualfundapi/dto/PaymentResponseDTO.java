@@ -13,9 +13,9 @@ public class PaymentResponseDTO {
 
     private String message;
 
-    public static PaymentResponseDTO genericFailureResponse(){
+    public static PaymentResponseDTO genericFailureResponse(String errorMessage){
         PaymentResponseDTO paymentResponse = new PaymentResponseDTO();
-        paymentResponse.setMessage("Unable to fetch response.");
+        paymentResponse.setMessage("Unable to fetch response due to " + errorMessage);
         paymentResponse.setSuccess(false);
         return paymentResponse;
     }

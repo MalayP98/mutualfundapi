@@ -30,6 +30,9 @@ public class Payment extends AuditingEntity {
     @Column(name = "user_id")
     private Long userId;
 
+    @Column(name = "payment_amount")
+    private Double amount;
+
     @Column(name = "transaction_type")
     @Enumerated(EnumType.STRING)
     private TransactionType transactionType;
