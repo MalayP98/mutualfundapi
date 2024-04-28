@@ -20,9 +20,4 @@ public class PaymentResource {
     public ResponseEntity<PaymentResponseDTO> getPaymentLink(@RequestBody PaymentDAO paymentInfo){
         return ResponseEntity.ok(paymentService.getPaymentLink(paymentInfo));
     }
-
-//    public static void main(String[] args) throws JsonProcessingException {
-//        PaymentDAO paymentDAO = new PaymentDAO();
-//        System.out.println(JsonConstants.OBJECT_MAPPER.writeValueAsString(paymentDAO));
-//    }
 }
