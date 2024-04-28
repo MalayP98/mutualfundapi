@@ -7,6 +7,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.HttpClientErrorException;
@@ -16,13 +17,13 @@ import com.mutualfunds.backend.mutualfundapi.constants.JsonConstants;
 import com.mutualfunds.backend.mutualfundapi.dto.OrderDTO;
 import com.mutualfunds.backend.mutualfundapi.pojo.entity.Order;
 import com.mutualfunds.backend.mutualfundapi.services.OrderService;
-import com.mutualfunds.backend.mutualfundapi.services.RTAManagerService;
+import com.mutualfunds.backend.mutualfundapi.services.RTAService;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 @Component
-@RequiredArgsConstructor
+@RequiredArgsConstructor(onConstructor_ = {@Autowired})
 @Slf4j
 public class OrderSyncScheduler {
 
@@ -30,7 +31,7 @@ public class OrderSyncScheduler {
 
     private final OrderService orderService;
 
-    private final RTAManagerService rtaManagerService;
+    private final RTAService rtaService;
 
     @Scheduled(initialDelay = 5, fixedDelay = 5, timeUnit = TimeUnit.MINUTES)
     public void syncOrders() {
@@ -51,7 +52,7 @@ public class OrderSyncScheduler {
         //Update order status  accordingly (FAILED/REJECTED)
         for(Order order : pendingOrders){
             try {
-                String jsonResponse = rtaManagerService.fetchOrder(order.getOrderId());
+                String jsonResponse = rtaService.fetchOrder(order.getOrderId());
                 OrderDTO orderDTO = JsonConstants.OBJECT_MAPPER.readValue(jsonResponse, OrderDTO.class);
                 if(orderDTO.getSucceededAt() != null) {
                     CompletableFuture.runAsync(() -> orderService.updateOrderStatus(order, Order.TransactionStatus.SUCCEEDED));
