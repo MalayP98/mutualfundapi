@@ -3,7 +3,6 @@ package com.mutualfunds.backend.mutualfundapi.initializer;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.mutualfunds.backend.mutualfundapi.constants.JsonConstants;
 import com.mutualfunds.backend.mutualfundapi.pojo.entity.FundStrategy;
-import com.mutualfunds.backend.mutualfundapi.repositories.OrderRepository;
 import com.mutualfunds.backend.mutualfundapi.services.FundStrategyService;
 import com.mutualfunds.backend.mutualfundapi.services.OrderService;
 import lombok.RequiredArgsConstructor;
@@ -21,10 +20,6 @@ import java.util.List;
 public class StrategyInitializer implements CommandLineRunner {
 
     private final FundStrategyService fundStrategyService;
-
-    private final OrderService orderService;
-
-    private final OrderRepository orderRepository;
 
     private final static String STRATEGIES_PATH = "src/main/resources/jsons/";
 
