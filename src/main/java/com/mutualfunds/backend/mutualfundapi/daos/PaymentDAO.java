@@ -1,17 +1,19 @@
 package com.mutualfunds.backend.mutualfundapi.daos;
 
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
+@Builder
 public class PaymentDAO {
 
-    private Integer amount;
-
-    private Long productId;
+    private Double amount;
 
     private String accountNumber;
 
     private String ifscCode;
+
+    private String redirectUrl;
 }
