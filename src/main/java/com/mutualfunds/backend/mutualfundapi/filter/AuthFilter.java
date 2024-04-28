@@ -33,20 +33,18 @@ public class AuthFilter implements Filter {
     @Override
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
         HttpServletRequest httpServletRequest = (HttpServletRequest) servletRequest;
-        if(!httpServletRequest.getRequestURL().toString().contains("/h2console")){
-            String phoneNumber = httpServletRequest.getHeader(PHONE_NUMBER_HEADER);
-            if(Objects.isNull(phoneNumber)){
-                throw new HttpClientErrorException(HttpStatus.BAD_REQUEST, "Mandatory header 'phoneNumber' missing.");
-            }
-            SecurityContextHolder.getContext().setAuthentication(
-                    new UsernamePasswordAuthenticationToken(
-                            userService
-                                    .getUserWithPhoneNumber(Long.valueOf(phoneNumber))
-                                    .orElse(userService.createRandomUserWithPhoneNumber(Long.valueOf(phoneNumber))),
-                            null
-                    )
-            );
+        String phoneNumber = httpServletRequest.getHeader(PHONE_NUMBER_HEADER);
+        if(Objects.isNull(phoneNumber)){
+            throw new HttpClientErrorException(HttpStatus.BAD_REQUEST, "Mandatory header 'phoneNumber' missing.");
         }
+        SecurityContextHolder.getContext().setAuthentication(
+                new UsernamePasswordAuthenticationToken(
+                        userService
+                                .getUserWithPhoneNumber(Long.valueOf(phoneNumber))
+                                .orElse(userService.createRandomUserWithPhoneNumber(Long.valueOf(phoneNumber))),
+                        null
+                )
+        );
         filterChain.doFilter(servletRequest, servletResponse);
     }
 

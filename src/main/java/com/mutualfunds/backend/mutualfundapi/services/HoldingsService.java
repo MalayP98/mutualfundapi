@@ -23,7 +23,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 @Service
-@RequiredArgsConstructor
+@RequiredArgsConstructor(onConstructor_ = {@Autowired})
 @Slf4j
 public class HoldingsService {
     
@@ -47,7 +47,7 @@ public class HoldingsService {
     }
 
     private HoldingsDTO generateHoldingsDTO(List<OrderFundJoin> allOrdersByUserId)
-            throws IOException {
+            throws IOException, JsonProcessingException, JsonMappingException {
         Map<String, Map<String, FundDTO>> strategyMap = new HashMap<>();
         Double totalInvestedValue = 0.0;
         Double totalMarketValue = 0.0;
