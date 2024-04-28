@@ -19,5 +19,6 @@ public class FundStrategy extends AuditingEntity{
     private String description;
 
     @OneToMany(cascade = CascadeType.ALL)
+    @JoinColumn(name = "fund_strategy_id")
     private List<Fund> funds;
 }
