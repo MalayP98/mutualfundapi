@@ -13,4 +13,6 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
 
     @Query("SELECT o, f, fs FROM FundStrategy fs INNER JOIN fs.funds f INNER JOIN Order o ON f.id = o.productId WHERE o.userId = :userId AND o.status = 'SUCCEEDED'")
     public List<Object[]> findOrdersJoinFundsByUserId(Long userId);
+
+    public List<Order> findByStatus(Order.TransactionStatus status);
 }

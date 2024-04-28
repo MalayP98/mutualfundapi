@@ -82,4 +82,13 @@ public class OrderService {
         
         orderRepository.save(order);
     }
+
+    public void updateOrderStatus(Order order, Order.TransactionStatus newStatus) {
+        order.setStatus(newStatus);
+        orderRepository.save(order);
+    }
+
+    public List<Order> fetchOrdersByStatus(Order.TransactionStatus status){
+        return orderRepository.findByStatus(status);
+    }
 }
