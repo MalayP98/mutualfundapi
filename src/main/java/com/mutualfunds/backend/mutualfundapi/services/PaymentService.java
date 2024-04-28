@@ -39,7 +39,7 @@ public class PaymentService {
 
     private final OrderService orderService;
 
-    public PaymentResponseDTO getPaymentLink(PaymentDAO paymentInfo, Long strategyId) {
+    public PaymentResponseDTO getPaymentLink(PaymentDAO paymentInfo) {
         try {
             // Make payload json from DAO
             String paymentDAOJson = JsonConstants.OBJECT_MAPPER.writeValueAsString(paymentInfo);
@@ -48,7 +48,7 @@ public class PaymentService {
             // get the response DTO from the result string
             PaymentResponseDTO paymentResponse = JsonConstants.OBJECT_MAPPER.readValue(results,
                     PaymentResponseDTO.class);
-            CompletableFuture.runAsync(() -> savePayment(paymentResponse, paymentInfo, strategyId));
+            CompletableFuture.runAsync(() -> savePayment(paymentResponse, paymentInfo));
             return paymentResponse;
         } catch (Exception e) {
             // TODO: handle exception
@@ -57,7 +57,7 @@ public class PaymentService {
         }
     }
 
-    private Payment savePayment(PaymentResponseDTO paymentResponse, PaymentDAO paymentInfo, Long strategyId) {
+    private Payment savePayment(PaymentResponseDTO paymentResponse, PaymentDAO paymentInfo){
         String link = paymentResponse.getPaymentLink();
         String[] tokens = link.split("//");
         return paymentRepository.save(Payment
@@ -65,7 +65,7 @@ public class PaymentService {
                 .userId(userService.currentUser().getId())
                 .status(Payment.TransactionStatus.PENDING)
                 .amount(paymentInfo.getAmount())
-                .productId(strategyId)
+                .productId(paymentInfo.getProductId())
                 .transactionType(Payment.TransactionType.CREDIT)
                 .transactionId(tokens[tokens.length - 1])
                 .build());

@@ -23,7 +23,9 @@ public class PaymentManagerService {
     public String createPaymentCall(String paymentInfo) throws IOException, HttpClientErrorException, HttpServerErrorException {
         String url = ApiConstants.PAYMENT_GATEWAY_URL + "/payment";
         RequestBody body = ApiConstants.getRequestBody(paymentInfo);
-        Request request = new Request.Builder().url(url).method("POST", body).addHeader("Content-Type", "application/json").build();
+        Request request = new Request.Builder()
+                .url(url)
+                .method("POST", body).addHeader("Content-Type", "application/json").build();
         Response response = ApiConstants.API_CLIENT.newCall(request).execute();
 
         if(response.code() != 200) {
