@@ -22,8 +22,6 @@ public class StrategyInitializer implements CommandLineRunner {
 
     private final FundStrategyService fundStrategyService;
 
-    private final AppProperties appProperties;
-
     private final static String STRATEGIES_PATH = "src/main/resources/jsons/";
 
     private final static String FILE_NAME = "strategies.json";

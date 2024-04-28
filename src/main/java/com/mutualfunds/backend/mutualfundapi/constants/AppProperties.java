@@ -13,4 +13,8 @@ import org.springframework.stereotype.Service;
 public class AppProperties {
 
     private Integer globalRetryCount;
+
+    private String urlRta;
+
+    private String urlPay;
 }

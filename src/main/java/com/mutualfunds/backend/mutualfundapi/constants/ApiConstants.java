@@ -17,9 +17,6 @@ public class ApiConstants {
 
     public static final OkHttpClient API_CLIENT = new OkHttpClient().newBuilder().build();
     public static final MediaType JSON_MEDIA = MediaType.parse("application/json");
-    public static final String PAYMENT_GATEWAY_URL = "http://localhost:8080";
-    public static final String RTA_GATEWAY_URL = "http://localhost:8081";
-    public static final int MAX_RETRIES = 3;
     
     public static RequestBody getRequestBody(String requestJson) {
         return RequestBody.create(requestJson, JSON_MEDIA);

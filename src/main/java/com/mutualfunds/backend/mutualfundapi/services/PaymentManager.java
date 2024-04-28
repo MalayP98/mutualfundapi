@@ -2,6 +2,7 @@ package com.mutualfunds.backend.mutualfundapi.services;
 
 import java.io.IOException;
 
+import com.mutualfunds.backend.mutualfundapi.constants.AppProperties;
 import com.mutualfunds.backend.mutualfundapi.constants.JsonConstants;
 import com.mutualfunds.backend.mutualfundapi.constants.RequestType;
 import com.mutualfunds.backend.mutualfundapi.daos.PaymentDAO;
@@ -23,8 +24,10 @@ import okhttp3.RequestBody;
 @Slf4j
 public class PaymentManager {
 
+    private final AppProperties appProperties;
+
     public PaymentResponseDTO createPaymentCall(PaymentDAO paymentInfo) throws IOException, HttpClientErrorException, HttpServerErrorException {
-        String url = ApiConstants.PAYMENT_GATEWAY_URL + "/payment";
+        String url = appProperties.getUrlPay() + "/payment";
         RequestBody body = ApiConstants.getRequestBody(JsonConstants.OBJECT_MAPPER.writeValueAsString(paymentInfo));
         Request request = new Request.Builder()
                 .url(url)
@@ -35,7 +38,7 @@ public class PaymentManager {
     }
 
     public CheckPaymentDTO getPaymentCall(String paymentId) throws IOException, HttpClientErrorException, HttpServerErrorException {
-        String url = ApiConstants.PAYMENT_GATEWAY_URL + "/payment/" + paymentId;
+        String url = appProperties.getUrlPay() + "/payment/" + paymentId;
         RequestBody body = ApiConstants.getRequestBody("");
         Request request = new Request.Builder().url(url).method(RequestType.GET.getName(), body).build();
         return JsonConstants.OBJECT_MAPPER.readValue(ApiConstants.getResponseBody(request), CheckPaymentDTO.class);

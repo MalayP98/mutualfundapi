@@ -2,6 +2,7 @@ package com.mutualfunds.backend.mutualfundapi.services;
 
 import java.io.IOException;
 
+import com.mutualfunds.backend.mutualfundapi.constants.AppProperties;
 import com.mutualfunds.backend.mutualfundapi.constants.RequestType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
@@ -18,9 +19,11 @@ import okhttp3.Request;
 @Slf4j
 public class RTAService {
 
+    private final AppProperties appProperties;
+
     public String createOrder(String jsonBody) throws IOException, HttpClientErrorException, HttpServerErrorException{
         Request request = new Request.Builder()
-        .url(ApiConstants.RTA_GATEWAY_URL + "/order")
+        .url(appProperties.getUrlRta() + "/order")
         .method(RequestType.POST.getName(), ApiConstants.getRequestBody(jsonBody))
         .addHeader("Content-Type", "application/json")
         .build();
@@ -29,7 +32,7 @@ public class RTAService {
 
     public String fetchOrder(String orderId) throws IOException, HttpClientErrorException, HttpServerErrorException{
         Request request = new Request.Builder()
-        .url(ApiConstants.RTA_GATEWAY_URL + "/order/" + orderId)
+        .url(appProperties.getUrlRta() + "/order/" + orderId)
         .method(RequestType.GET.getName(), ApiConstants.getRequestBody(""))
         .addHeader("Content-Type", "application/json")
         .build();
@@ -37,7 +40,7 @@ public class RTAService {
     }
 
     public String fetchFundMarketValue(String fundName) throws IOException, HttpClientErrorException, HttpServerErrorException{
-        String url = ApiConstants.RTA_GATEWAY_URL + "/market-value/" + fundName;
+        String url = appProperties.getUrlRta() + "/market-value/" + fundName;
         Request request = new Request.Builder()
         .url(url)
         .method(RequestType.GET.getName(), ApiConstants.getRequestBody(""))
