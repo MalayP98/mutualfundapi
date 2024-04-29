@@ -13,7 +13,7 @@ public class PaymentDAO {
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private Long productId;
 
-    private Double amount;
+    private Integer amount;
 
     private String accountNumber;
 

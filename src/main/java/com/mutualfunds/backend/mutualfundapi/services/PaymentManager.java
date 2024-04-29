@@ -31,7 +31,7 @@ public class PaymentManager {
         RequestBody body = ApiConstants.getRequestBody(JsonConstants.OBJECT_MAPPER.writeValueAsString(paymentInfo));
         Request request = new Request.Builder()
                 .url(url)
-                .method(RequestType.POST.getName(), body).addHeader("Content-Type", "application/json").build();
+                .method("POST", body).addHeader("Content-Type", "application/json").build();
         return JsonConstants.OBJECT_MAPPER.readValue(ApiConstants.getResponseBody(request),
                 PaymentResponseDTO.class);
         
@@ -39,8 +39,8 @@ public class PaymentManager {
 
     public CheckPaymentDTO getPaymentCall(String paymentId) throws IOException, HttpClientErrorException, HttpServerErrorException {
         String url = appProperties.getUrlPay() + "/payment/" + paymentId;
-        RequestBody body = ApiConstants.getRequestBody("");
-        Request request = new Request.Builder().url(url).method(RequestType.GET.getName(), body).build();
+        // RequestBody body = ApiConstants.getRequestBody(null);
+        Request request = new Request.Builder().url(url).get().build();
         return JsonConstants.OBJECT_MAPPER.readValue(ApiConstants.getResponseBody(request), CheckPaymentDTO.class);
     }
 }
