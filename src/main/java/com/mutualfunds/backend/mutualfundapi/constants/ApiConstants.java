@@ -19,7 +19,7 @@ public class ApiConstants {
     public static final MediaType JSON_MEDIA = MediaType.parse("application/json");
     
     public static RequestBody getRequestBody(String requestJson) {
-        return RequestBody.create(requestJson, JSON_MEDIA);
+        return RequestBody.create(JSON_MEDIA, requestJson);
     }
 
     public static String getResponseBody(Request request) throws IOException {

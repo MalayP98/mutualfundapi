@@ -2,14 +2,18 @@ package com.mutualfunds.backend.mutualfundapi.pojo.entity;
 
 import javax.persistence.*;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
 @Table(name = "orders")
 @Getter
 @Setter
+@NoArgsConstructor
+@AllArgsConstructor
 @Builder
 public class Order extends AuditingEntity{
 

@@ -42,7 +42,7 @@ public class PaymentService {
     public PaymentResponseDTO getPaymentLink(PaymentDAO paymentInfo) {
         try {
             PaymentResponseDTO paymentResponse = paymentManager.createPaymentCall(paymentInfo);
-            CompletableFuture.runAsync(() -> savePayment(paymentResponse, paymentInfo));
+            savePayment(paymentResponse, paymentInfo);
             return paymentResponse;
         } catch (Exception e) {
             log.error("Error in getting payment link");
@@ -52,12 +52,12 @@ public class PaymentService {
 
     private Payment savePayment(PaymentResponseDTO paymentResponse, PaymentDAO paymentInfo){
         String link = paymentResponse.getPaymentLink();
-        String[] tokens = link.split("//");
+        String[] tokens = link.split("/");
         return paymentRepository.save(Payment
                 .builder()
                 .userId(userService.currentUser().getId())
                 .status(Payment.TransactionStatus.PENDING)
-                .amount(paymentInfo.getAmount())
+                .amount(paymentInfo.getAmount().doubleValue())
                 .productId(paymentInfo.getProductId())
                 .transactionType(Payment.TransactionType.CREDIT)
                 .transactionId(tokens[tokens.length - 1])
@@ -74,10 +74,10 @@ public class PaymentService {
         List<Payment> completedPayments = new ArrayList<>();
         for (Payment item : pendingPayments) {
             boolean success = checkPaymentStatus(item);
+            CompletableFuture.runAsync(() -> updateTransactionStatus(item, success));
             if (success) {
                 completedPayments.add(item);
             }
-            CompletableFuture.runAsync(() -> updateTransactionStatus(item, success));
         }
         if (completedPayments.size() == 0) {
             return false;
@@ -101,7 +101,7 @@ public class PaymentService {
                     success = true;
                     break;
                 }
-            } catch (HttpClientErrorException e) {
+            } catch (Exception e) {
                 log.error("Failed payment attempt. Message {}", e.getMessage());
             } finally {
                 retries--;

@@ -33,7 +33,7 @@ public class RTAService {
     public String fetchOrder(String orderId) throws IOException, HttpClientErrorException, HttpServerErrorException{
         Request request = new Request.Builder()
         .url(appProperties.getUrlRta() + "/order/" + orderId)
-        .method(RequestType.GET.getName(), ApiConstants.getRequestBody(""))
+        .get()
         .addHeader("Content-Type", "application/json")
         .build();
         return ApiConstants.getResponseBody(request);
@@ -43,7 +43,7 @@ public class RTAService {
         String url = appProperties.getUrlRta() + "/market-value/" + fundName;
         Request request = new Request.Builder()
         .url(url)
-        .method(RequestType.GET.getName(), ApiConstants.getRequestBody(""))
+        .get()
         .addHeader("Content-Type", "application/json")
         .build();
         return ApiConstants.getResponseBody(request);
