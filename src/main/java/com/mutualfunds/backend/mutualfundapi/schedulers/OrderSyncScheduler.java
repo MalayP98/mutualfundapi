@@ -36,13 +36,13 @@ public class OrderSyncScheduler {
     @Scheduled(initialDelay = 60, fixedDelay = 30, timeUnit = TimeUnit.SECONDS)
     public void syncOrders() {
         
-        log.info("Hello from scheduler");
+        log.info("{} started.", getClass().getSimpleName());
         //Fetch all orders in SUBMITTED status
         List<Order> allSubmittedOrders = orderService.fetchOrdersByStatus(Order.TransactionStatus.SUBMITTED);
 
         //Fail all orders with time difference >  expiry threshold
         allSubmittedOrders.stream().filter(
-            (order) -> checkOrderExpiry(order)
+                this::checkOrderExpiry
         ).forEach((order) -> {
             CompletableFuture.runAsync(() -> orderService.updateOrder(order, new OrderDTO(), Order.TransactionStatus.FAILED));
         });
@@ -54,42 +54,26 @@ public class OrderSyncScheduler {
         //Update order status  accordingly (FAILED/REJECTED)
         for(Order order : pendingOrders){
             try {
-                String jsonResponse = rtaService.fetchOrder(order.getOrderId());
-                OrderDTO orderDTO = JsonConstants.OBJECT_MAPPER.readValue(jsonResponse, OrderDTO.class);
+                OrderDTO orderDTO = rtaService.fetchOrder(order.getOrderId());
                 if(orderDTO.getSucceededAt() != null) {
                     CompletableFuture.runAsync(() -> orderService.updateOrder(order, orderDTO, Order.TransactionStatus.SUCCEEDED));
                 } else if(orderDTO.getFailedAt() != null) {
                     CompletableFuture.runAsync(() -> orderService.updateOrder(order, orderDTO, Order.TransactionStatus.FAILED));
                 }
-            } catch (HttpClientErrorException e) {
-                // TODO Auto-generated catch block
-                log.error("Failed to fetch order", e.getMessage());
-            } catch (HttpServerErrorException e) {
-                // TODO Auto-generated catch block
-                log.error("Failed to fetch order", e.getMessage());
             } catch (IOException e) {
-                // TODO Auto-generated catch block
-                log.error("Failed to fetch order", e.getMessage());
+                log.error("Failed to fetch order. Error message {}", e.getMessage());
             }
-
         }
-
     }
 
     private boolean checkOrderExpiry(Order order) {
         try {
-            Date orderCreatedAt = order.getCreatedDate();
-            long timeDiffInMS = new Date().getTime() - orderCreatedAt.getTime();
-            long timeDiffInMins = timeDiffInMS/(1000 * 60);
-            if(timeDiffInMins > expiryThresholdInMinutes){
-                return true;
-            }
-            return false;
+            return (TimeUnit.MILLISECONDS.toMinutes(
+                    System.currentTimeMillis()-order.getCreatedDate().getTime())
+            ) > expiryThresholdInMinutes;
         } catch (Exception e) {
-            // TODO Auto-generated catch block
-            log.error("Failed to calculate time diff", e.getMessage());
+            log.error("Failed to calculate time difference. Error message {}", e.getMessage());
             return false;
         }
     }
-    
 }

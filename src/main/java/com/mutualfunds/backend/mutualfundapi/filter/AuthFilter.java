@@ -41,7 +41,8 @@ public class AuthFilter implements Filter {
             SecurityContextHolder.getContext().setAuthentication(
                     new UsernamePasswordAuthenticationToken(
                             userService
-                                    .getUserWithPhoneNumber(Long.valueOf(phoneNumber)),
+                                    .getUserWithPhoneNumber(Long.valueOf(phoneNumber))
+                                    .orElseGet(() -> userService.createRandomUserWithPhoneNumber(Long.valueOf(phoneNumber))),
                             null
                     )
             );

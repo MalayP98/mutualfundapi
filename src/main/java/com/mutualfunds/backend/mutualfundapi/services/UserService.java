@@ -18,18 +18,8 @@ public class UserService {
 
     private final UserRepository userRepository;
 
-    public User getUserWithPhoneNumber(Long phoneNumber){
-        // return userRepository.findByPhoneNumber(phoneNumber);
-        Optional<User> obj = userRepository.findByPhoneNumber(phoneNumber);
-        if(obj.isPresent()) {
-            User user = obj.get();
-            log.debug("User is "+ user.getUsername() + "with Number" + user.getPhoneNumber());
-            return user;
-        } else {
-            User user = createRandomUserWithPhoneNumber(phoneNumber);
-            log.debug("New User is "+ user.getUsername() + "with Number" + user.getPhoneNumber());
-            return user;
-        }
+    public Optional<User> getUserWithPhoneNumber(Long phoneNumber){
+        return userRepository.findByPhoneNumber(phoneNumber);
     }
 
     public User createRandomUserWithPhoneNumber(Long phoneNumber){

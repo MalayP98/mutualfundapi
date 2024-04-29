@@ -43,10 +43,13 @@ public class OrderService {
             try {
                 Integer percentage = fund.getPercentage();
                 Double totalAmountInvested = item.getAmount();
-                CreateOrderDAO createOrder = CreateOrderDAO.builder().amount(totalAmountInvested * percentage * 0.01).paymentID(item.getTransactionId()).fund(fund.getName()).build();
-                String jsonBody = JsonConstants.OBJECT_MAPPER.writeValueAsString(createOrder);
-                String response = rtaManagerService.createOrder(jsonBody);
-                CreateOrderDTO createdOrder= JsonConstants.OBJECT_MAPPER.readValue(response, CreateOrderDTO.class);
+                CreateOrderDAO createOrder = CreateOrderDAO
+                        .builder()
+                        .amount(totalAmountInvested * percentage * 0.01)
+                        .paymentID(item.getTransactionId())
+                        .fund(fund.getName())
+                        .build();
+                CreateOrderDTO createdOrder= rtaManagerService.createOrder(createOrder);
                 saveOrder(userId, fund, createdOrder);
             } catch (IOException e) {
                 log.error("Error while creating order. Message {}", e.getMessage());

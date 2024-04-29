@@ -64,8 +64,7 @@ public class HoldingsService {
             if(tempFund.getMarketValue() == null) {
                 tempFund.setMarketValue(0.0);
             }
-            String jsonResponse = rtaManagerService.fetchFundMarketValue(item.getFundName());
-            MarketValueDTO response = JsonConstants.OBJECT_MAPPER.readValue(jsonResponse, MarketValueDTO.class);
+            MarketValueDTO response = rtaManagerService.fetchFundMarketValue(item.getFundName());
             Double marketValue = response.getMarketValue();
             tempFund.setMarketValue(tempFund.getMarketValue() + (marketValue * item.getUnits()));
             totalMarketValue += tempFund.getMarketValue();
