@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import com.mutualfunds.backend.mutualfundapi.constants.JsonConstants;
 import com.mutualfunds.backend.mutualfundapi.daos.CreateOrderDAO;
 import com.mutualfunds.backend.mutualfundapi.dto.CreateOrderDTO;
+import com.mutualfunds.backend.mutualfundapi.dto.OrderDTO;
 import com.mutualfunds.backend.mutualfundapi.pojo.entity.Fund;
 import com.mutualfunds.backend.mutualfundapi.pojo.entity.Order;
 import com.mutualfunds.backend.mutualfundapi.pojo.entity.Payment;
@@ -42,7 +43,7 @@ public class OrderService {
             try {
                 Integer percentage = fund.getPercentage();
                 Double totalAmountInvested = item.getAmount();
-                CreateOrderDAO createOrder = CreateOrderDAO.builder().amount(totalAmountInvested * percentage).paymentID(item.getTransactionId()).fund(fund.getName()).build();
+                CreateOrderDAO createOrder = CreateOrderDAO.builder().amount(totalAmountInvested * percentage * 0.01).paymentID(item.getTransactionId()).fund(fund.getName()).build();
                 String jsonBody = JsonConstants.OBJECT_MAPPER.writeValueAsString(createOrder);
                 String response = rtaManagerService.createOrder(jsonBody);
                 CreateOrderDTO createdOrder= JsonConstants.OBJECT_MAPPER.readValue(response, CreateOrderDTO.class);
@@ -63,7 +64,8 @@ public class OrderService {
                 .build());
     }
 
-    public void updateOrderStatus(Order order, Order.TransactionStatus newStatus) {
+    public void updateOrder(Order order, OrderDTO fetchedOrder, Order.TransactionStatus newStatus) {
+        order.setUnits(fetchedOrder.getUnits());
         order.setStatus(newStatus);
         orderRepository.save(order);
     }

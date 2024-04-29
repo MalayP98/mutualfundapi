@@ -49,7 +49,12 @@ public class HoldingsService {
             String fundName = item.getFundName();
             FundDTO tempFund = fundMap.getOrDefault(fundName, new FundDTO());
             tempFund.setName(item.getFundName());
-            tempFund.setCount(tempFund.getCount() + 1);
+            if(item.getUnits() > 1 || item.getStatus() == "FAILED")  {
+                tempFund.setCount(tempFund.getCount() + 1);
+            } else {
+                tempFund.setFailedCount(tempFund.getFailedCount() + 1);
+            }
+
             if(tempFund.getInvestedValue() == null) {
                 tempFund.setInvestedValue(0.0);
             }
@@ -65,6 +70,7 @@ public class HoldingsService {
             tempFund.setMarketValue(tempFund.getMarketValue() + (marketValue * item.getUnits()));
             totalMarketValue += tempFund.getMarketValue();
             fundMap.put(fundName, tempFund);
+            strategyMap.put(strategyName, fundMap);
         }
         return HoldingsDTO
                 .builder()

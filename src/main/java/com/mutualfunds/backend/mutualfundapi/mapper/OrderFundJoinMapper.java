@@ -31,6 +31,7 @@ public class OrderFundJoinMapper {
             orderFundJoin.setFundStrategy(fundStrategy.getName());
             orderFundJoin.setInvestedValue(order.getAmount());
             orderFundJoin.setUnits(order.getUnits());
+            orderFundJoin.setStatus(order.getStatus().toString());
             return orderFundJoin;
         }
         log.error("Unable to map this instance.");

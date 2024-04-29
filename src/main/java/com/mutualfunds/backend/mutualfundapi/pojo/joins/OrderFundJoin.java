@@ -14,5 +14,6 @@ public class OrderFundJoin {
     private String fundName;
     private String fundStrategy;
     private Double units;
+    private String status;
     
 }

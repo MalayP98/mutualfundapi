@@ -33,8 +33,10 @@ public class OrderSyncScheduler {
 
     private final RTAService rtaService;
 
-    @Scheduled(initialDelay = 5, fixedDelay = 5, timeUnit = TimeUnit.MINUTES)
+    @Scheduled(initialDelay = 60, fixedDelay = 30, timeUnit = TimeUnit.SECONDS)
     public void syncOrders() {
+        
+        log.info("Hello from scheduler");
         //Fetch all orders in SUBMITTED status
         List<Order> allSubmittedOrders = orderService.fetchOrdersByStatus(Order.TransactionStatus.SUBMITTED);
 
@@ -42,7 +44,7 @@ public class OrderSyncScheduler {
         allSubmittedOrders.stream().filter(
             (order) -> checkOrderExpiry(order)
         ).forEach((order) -> {
-            CompletableFuture.runAsync(() -> orderService.updateOrderStatus(order, Order.TransactionStatus.FAILED));
+            CompletableFuture.runAsync(() -> orderService.updateOrder(order, new OrderDTO(), Order.TransactionStatus.FAILED));
         });
 
         List<Order> pendingOrders = allSubmittedOrders.stream().filter(
@@ -55,9 +57,9 @@ public class OrderSyncScheduler {
                 String jsonResponse = rtaService.fetchOrder(order.getOrderId());
                 OrderDTO orderDTO = JsonConstants.OBJECT_MAPPER.readValue(jsonResponse, OrderDTO.class);
                 if(orderDTO.getSucceededAt() != null) {
-                    CompletableFuture.runAsync(() -> orderService.updateOrderStatus(order, Order.TransactionStatus.SUCCEEDED));
+                    CompletableFuture.runAsync(() -> orderService.updateOrder(order, orderDTO, Order.TransactionStatus.SUCCEEDED));
                 } else if(orderDTO.getFailedAt() != null) {
-                    CompletableFuture.runAsync(() -> orderService.updateOrderStatus(order, Order.TransactionStatus.FAILED));
+                    CompletableFuture.runAsync(() -> orderService.updateOrder(order, orderDTO, Order.TransactionStatus.FAILED));
                 }
             } catch (HttpClientErrorException e) {
                 // TODO Auto-generated catch block
@@ -79,7 +81,7 @@ public class OrderSyncScheduler {
             Date orderCreatedAt = order.getCreatedDate();
             long timeDiffInMS = new Date().getTime() - orderCreatedAt.getTime();
             long timeDiffInMins = timeDiffInMS/(1000 * 60);
-            if(timeDiffInMS > expiryThresholdInMinutes){
+            if(timeDiffInMins > expiryThresholdInMinutes){
                 return true;
             }
             return false;
