@@ -12,6 +12,6 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface FundStrategyRepository extends JpaRepository<FundStrategy, Long> {
 
-    @Query("SELECT f FROM FundStrategy fs INNER JOIN fs.funds WHERE fs.id = :strategyId")
+    @Query("SELECT f FROM FundStrategy fs INNER JOIN fs.funds f WHERE fs.id = :strategyId")
     public List<Fund> findFundsByStrategyId(Long strategyId);
 }

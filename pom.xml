@@ -19,9 +19,14 @@
 	<dependencies>
 
 		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-quartz</artifactId>
+		</dependency>
+
+
+		<dependency>
 			<groupId>com.squareup.okhttp3</groupId>
 			<artifactId>okhttp</artifactId>
-			<version>5.0.0-alpha.14</version>
 		</dependency>
 
 
@@ -29,8 +34,6 @@
 			<groupId>org.apache.httpcomponents</groupId>
 			<artifactId>httpclient</artifactId>
 		</dependency>
-
-		
 
 		<!-- <dependency>
 			<groupId>com.fasterxml.jackson.datatype</groupId>
@@ -45,7 +48,11 @@
 		</dependency>
 
 		
-
+		<dependency>
+			<groupId>org.jetbrains.kotlin</groupId>
+			<artifactId>kotlin-stdlib</artifactId>
+			<version>1.4.32</version>
+		 </dependency>
 
 		<dependency>
 			<groupId>com.h2database</groupId>

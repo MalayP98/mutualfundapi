@@ -5,13 +5,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.mutualfunds.backend.mutualfundapi.dto.HoldingsDTO;
 import com.mutualfunds.backend.mutualfundapi.dto.MarketValueDTO;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonMappingException;
 import com.mutualfunds.backend.mutualfundapi.constants.JsonConstants;
 import com.mutualfunds.backend.mutualfundapi.dto.FundDTO;
 import com.mutualfunds.backend.mutualfundapi.pojo.joins.OrderFundJoin;
@@ -20,7 +17,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 @Service
-@RequiredArgsConstructor(onConstructor_ = {@Autowired})
+@RequiredArgsConstructor
 @Slf4j
 public class HoldingsService {
     
@@ -28,7 +25,7 @@ public class HoldingsService {
 
     private final OrderService orderService;
 
-    private final RTAManagerService rtaManagerService;
+    private final RTAService rtaManagerService;
 
     public HoldingsDTO calculateHoldingsDTO() throws Exception{
         //Get current user id
@@ -42,7 +39,7 @@ public class HoldingsService {
     }
 
     private HoldingsDTO generateHoldingsDTO(List<OrderFundJoin> allOrdersByUserId)
-            throws IOException, JsonProcessingException, JsonMappingException {
+            throws IOException {
         Map<String, Map<String, FundDTO>> strategyMap = new HashMap<>();
         Double totalInvestedValue = 0.0;
         Double totalMarketValue = 0.0;
@@ -52,7 +49,12 @@ public class HoldingsService {
             String fundName = item.getFundName();
             FundDTO tempFund = fundMap.getOrDefault(fundName, new FundDTO());
             tempFund.setName(item.getFundName());
-            tempFund.setCount(tempFund.getCount() + 1);
+            if(item.getUnits() > 1 || item.getStatus() == "FAILED")  {
+                tempFund.setCount(tempFund.getCount() + 1);
+            } else {
+                tempFund.setFailedCount(tempFund.getFailedCount() + 1);
+            }
+
             if(tempFund.getInvestedValue() == null) {
                 tempFund.setInvestedValue(0.0);
             }
@@ -68,9 +70,12 @@ public class HoldingsService {
             tempFund.setMarketValue(tempFund.getMarketValue() + (marketValue * item.getUnits()));
             totalMarketValue += tempFund.getMarketValue();
             fundMap.put(fundName, tempFund);
+            strategyMap.put(strategyName, fundMap);
         }
-
-        HoldingsDTO result = HoldingsDTO.builder().strategyMap(strategyMap).totalInvestedAmount(totalInvestedValue).totalMarketValue(totalMarketValue).build();
-        return result;
+        return HoldingsDTO
+                .builder()
+                .strategyMap(strategyMap)
+                .totalInvestedAmount(totalInvestedValue)
+                .totalMarketValue(totalMarketValue).build();
     }
 }

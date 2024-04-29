@@ -1,5 +1,6 @@
 package com.mutualfunds.backend.mutualfundapi.daos;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
@@ -9,7 +10,10 @@ import lombok.Setter;
 @Builder
 public class PaymentDAO {
 
-    private Double amount;
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    private Long productId;
+
+    private Integer amount;
 
     private String accountNumber;
 
